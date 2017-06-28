@@ -2,9 +2,9 @@
 module.exports = {
   ui: false,
   files: [
-    '*.html',
-    '*.css',
-    'js/*.js'
+    'dist/*.html',
+    'dist/*.css',
+    'dist/js/*.js'
   ],
-  server: './'
+  server: './dist'
 }
