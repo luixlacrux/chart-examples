@@ -1,0 +1,19 @@
+body {
+  font-size: 14px;
+}
+.container {
+  margin: 0 auto;
+}
+
+h1 {
+  text-align: center;
+}
+
+.container .chart {
+  margin: 0 auto;
+  padding-bottom: 4em;
+  width: 600px;
+}
+.container .chart canvas {
+  display: block;
+}
