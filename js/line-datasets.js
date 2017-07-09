@@ -1,59 +1,142 @@
+const data = [
+  {
+    fecha: "2017-06-13",
+    calificacion: 0,
+    cuenta: 26
+  },
+  {
+    fecha: "2017-06-13",
+    calificacion: 1,
+    cuenta: 26
+  },
+  {
+    fecha: "2017-06-20",
+    calificacion: 1,
+    cuenta: 2
+  },
+  {
+    fecha: "2017-06-20",
+    calificacion: 0,
+    cuenta: 3
+  },
+  {
+    fecha: "2017-06-21",
+    calificacion: 1,
+    cuenta: 3
+  },
+  {
+    fecha: "2017-06-21",
+    calificacion: 0,
+    cuenta: 1
+  },
+  {
+    fecha: "2017-06-22",
+    calificacion: 1,
+    cuenta: 11
+  },
+  {
+    fecha: "2017-06-27",
+    calificacion: 0,
+    cuenta: 27
+  },
+  {
+    fecha: "2017-06-27",
+    calificacion: 1,
+    cuenta: 34
+  },
+  {
+    fecha: "2017-06-28",
+    calificacion: 0,
+    cuenta: 15
+  },
+  {
+    fecha: "2017-06-28",
+    calificacion: 1,
+    cuenta: 16
+  },
+  {
+    fecha: "2017-06-29",
+    calificacion: 0,
+    cuenta: 56
+  },
+  {
+    fecha: "2017-06-29",
+    calificacion: 1,
+    cuenta: 72
+  }
+]
+
+const filterBy = ({ list, value, listGood, listBad }) => {
+  return list.map(date => {
+    const filterGood = listGood.filter(({ fecha }) => fecha === date)
+    const filterBad = listBad.filter(({ fecha }) => fecha === date)
+    const values = {
+      good: filterGood.length > 0 ? filterGood[0].cuenta : 0,
+      bad: filterBad.length > 0 ? filterBad[0].cuenta : 0,
+    }
+
+    const percentage = 100 / (values.good + values.bad) * values[value]
+    return percentage.toFixed(1)
+  })
+}
+
+const labels = data
+  .map(item => item.fecha)
+  .filter((item, i, a) => a.indexOf(item, i+1) < 0)
+
+const listGood = data.filter(item => item.calificacion > 0)
+const listBad = data.filter(item => item.calificacion === 0)
+
 const lineDatasets = new Chart(document.getElementById("line-datasets"), {
   type: 'line',
   data: {
-    labels: [1,2,3,4,5,6,7,8,9,10],
-    datasets: [
-      {
-        data: [10,15,7,6,7,1,3,2,7,8],
-        backgroundColor: "#C500E1",
-        borderWidth: 0,
-        fill: undefined
-      },
-      {
-        data: [20,22,12,12,16,11,17,22,23,25],
-        backgroundColor: "#FF4A62",
-        borderWidth: 0,
-        fill: "-1"
-      },
-      {
-        data: [30,28,29,25,25,26,23,30,31,35],
-        backgroundColor: "#65F9D7",
-        borderWidth: 0,
-        fill: 1
-      },
-      {
-        data: [35,34,36,36,37,41,33,32,33,38],
-        backgroundColor: "#5D7FFB",
-        borderWidth: 0,
-        fill: "-1"
-      },
-      {
-        data: [38,40,42,41,43,45,39,38,38,42],
-        backgroundColor: "#FCEE6D",
-        borderWidth: 0,
-        fill: "-1"
-      }
-    ]
+  labels: labels,
+  datasets: [
+    {
+      data: filterBy({ list: labels, value: 'good', listGood, listBad }),
+      backgroundColor: "#2196F3",
+      borderWidth: 0,
+      label: 'Buena'
+    },
+    {
+      data: filterBy({ list: labels, value: 'bad', listGood, listBad }),
+      backgroundColor: "#E91E63",
+      borderWidth: 0,
+      label: 'Mala'
+    }
+  ]
   },
   options: {
-    legend: {
-        display: false
-    },
     tooltips: {
         callbacks: {
-           label: function(tooltipItem) {
-                  return tooltipItem.yLabel;
+           label: (tooltipItem, data) => {
+             const label = data.datasets[tooltipItem.datasetIndex].label
+             return `${label} ${tooltipItem.yLabel}%`
            }
         }
+    },
+    scales: {
+      yAxes: [{
+        stacked: true,
+        ticks: {
+          min: 0,
+          max: 100,
+          callback: value => `${value}%`
+        },
+        scaleLabel: {
+          display: false,
+          labelString: "Percentage"
+        }
+      }]
     },
     elements: {
       line: {
         tension: 0
+        }
+      },
+      title: {
+        display: true,
+        text: 'Calificacion en el tiempo'
       }
-    },
-    title: {
-      display: true,
-      text: 'Calificacion en el tiempo'
     }
-  }
 });
